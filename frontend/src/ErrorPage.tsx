@@ -17,6 +17,7 @@ const S3ErrorImage = () => {
         const imageErrUrl = import.meta.env.IMAGE_ERR_URL;
         if (S3Url) {
           const imageUrl = `${S3Url}/${imageErrUrl}`; // Replace with your image key
+          console.log("Final S3 Image URL:", imageUrl);
           setS3ErrorImageUrl(imageUrl);
           setLoading(false);
           return;

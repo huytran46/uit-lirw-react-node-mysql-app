@@ -288,20 +288,20 @@ sudo npm install -g pm2
 # Define variables 
 REPO_URL="https://github.com/huytran46/uit-lirw-react-node-mysql-app.git" 
 BRANCH_NAME="feature/add-logging" 
-REPO_DIR="/home/ec2-user/react-node-mysql-app/backend" 
+REPO_DIR="/home/ec2-user/uit-lirw-react-node-mysql-app/backend" 
 ENV_FILE="$REPO_DIR/.env" 
 
 # Clone the repository 
 cd /home/ec2-user 
 sudo -u ec2-user git clone $REPO_URL 
-cd react-node-mysql-app  
+cd uit-lirw-react-node-mysql-app  
 
 # Checkout to the specific branch 
 sudo -u ec2-user git checkout $BRANCH_NAME 
 cd backend 
 
 # Define the log directory and ensure it exists 
-LOG_DIR="/home/ec2-user/react-node-mysql-app/backend/logs" 
+LOG_DIR="/home/ec2-user/uit-lirw-react-node-mysql-app/backend/logs" 
 mkdir -p $LOG_DIR 
 sudo chown -R ec2-user:ec2-user $LOG_DIR
 
@@ -339,7 +339,7 @@ sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json > /de
       "files": {
         "collect_list": [
           {
-            "file_path": "/home/ec2-user/react-node-mysql-app/backend/logs/*.log",
+            "file_path": "/home/ec2-user/uit-lirw-react-node-mysql-app/backend/logs/*.log",
             "log_group_name": "backend-node-app-logs",
             "log_stream_name": "{instance_id}",
             "timestamp_format": "%Y-%m-%d %H:%M:%S"
@@ -379,7 +379,7 @@ sudo systemctl enable nginx
 # Define variables
 REPO_URL="https://github.com/huytran46/uit-lirw-react-node-mysql-app.git"
 BRANCH_NAME="feature/add-logging"
-REPO_DIR="/home/ec2-user/react-node-mysql-app/frontend"
+REPO_DIR="/home/ec2-user/uit-lirw-react-node-mysql-app/frontend"
 ENV_FILE="$REPO_DIR/.env"
 APP_TIER_ALB_URL="http://<internal-application-tier-alb-end-point.region.elb.amazonaws.com>"  # Replace with your actual alb endpoint
 API_URL="/api"
@@ -388,18 +388,19 @@ IMAGE_ERR_URL="<IMAGE_URL>" # Replace with your s3 bucket url
 # Clone the repository as ec2-user
 cd /home/ec2-user
 sudo -u ec2-user git clone $REPO_URL
-cd react-node-mysql-app
+cd uit-lirw-react-node-mysql-app
 
 # Checkout to the specific branch
 sudo -u ec2-user git checkout $BRANCH_NAME
 cd frontend
 
 # Ensure ec2-user owns the directory
-sudo chown -R ec2-user:ec2-user /home/ec2-user/react-node-mysql-app
+sudo chown -R ec2-user:ec2-user /home/ec2-user/uit-lirw-react-node-mysql-app
 
 # Create .env file with the API_URL
 echo "VITE_API_URL=\"$API_URL\"" >> "$ENV_FILE"
-
+echo "VITE_S3_URL=\"$VITE_S3_URL\"" >> "$ENV_FILE"
+echo "IMAGE_ERR_URL=\"$IMAGE_ERR_URL\"" >> "$ENV_FILE"
 # Install Node.js dependencies as ec2-user
 sudo -u ec2-user npm install
 
