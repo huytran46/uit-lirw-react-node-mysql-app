@@ -400,7 +400,7 @@ sudo chown -R ec2-user:ec2-user /home/ec2-user/uit-lirw-react-node-mysql-app
 # Create .env file with the API_URL
 echo "VITE_API_URL=\"$API_URL\"" >> "$ENV_FILE"
 echo "VITE_S3_URL=\"$VITE_S3_URL\"" >> "$ENV_FILE"
-echo "IMAGE_ERR_URL=\"$IMAGE_ERR_URL\"" >> "$ENV_FILE"
+echo "VITE_IMAGE_ERR_URL=\"$IMAGE_ERR_URL\"" >> "$ENV_FILE"
 # Install Node.js dependencies as ec2-user
 sudo -u ec2-user npm install
 
