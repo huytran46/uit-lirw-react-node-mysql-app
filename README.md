@@ -117,7 +117,7 @@ git — version
 
 #### Clone repository
 ```bash
-git clone https://github.com/learnItRightWay01/react-node-mysql-app.git
+git clone https://github.com/huytran46/uit-lirw-react-node-mysql-app.git
 ```
 
 #### Install node.js
@@ -286,7 +286,7 @@ sudo yum install -y nodejs
 sudo npm install -g pm2 
 
 # Define variables 
-REPO_URL="https://github.com/learnItRightWay01/react-node-mysql-app.git" 
+REPO_URL="https://github.com/huytran46/uit-lirw-react-node-mysql-app.git" 
 BRANCH_NAME="feature/add-logging" 
 REPO_DIR="/home/ec2-user/react-node-mysql-app/backend" 
 ENV_FILE="$REPO_DIR/.env" 
@@ -377,13 +377,14 @@ sudo systemctl start nginx
 sudo systemctl enable nginx
 
 # Define variables
-REPO_URL="https://github.com/learnItRightWay01/react-node-mysql-app.git"
+REPO_URL="https://github.com/huytran46/uit-lirw-react-node-mysql-app.git"
 BRANCH_NAME="feature/add-logging"
 REPO_DIR="/home/ec2-user/react-node-mysql-app/frontend"
 ENV_FILE="$REPO_DIR/.env"
 APP_TIER_ALB_URL="http://<internal-application-tier-alb-end-point.region.elb.amazonaws.com>"  # Replace with your actual alb endpoint
 API_URL="/api"
-
+VITE_S3_URL="<S3_URL>" # Replace with your s3 bucket url
+IMAGE_ERR_URL="<IMAGE_URL>" # Replace with your s3 bucket url
 # Clone the repository as ec2-user
 cd /home/ec2-user
 sudo -u ec2-user git clone $REPO_URL

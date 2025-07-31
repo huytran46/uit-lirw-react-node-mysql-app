@@ -13,9 +13,10 @@ const S3ErrorImage = () => {
 
         // Method 1: Direct Public URL (simplest approach)
         // If your S3 bucket is public, just use direct URL
-        const publicS3Url = import.meta.env.VITE_S3_PUBLIC_URL;
-        if (publicS3Url) {
-          const imageUrl = `${publicS3Url}/group7-error.gif`; // Replace with your image key
+        const S3Url = import.meta.env.VITE_S3_URL;
+        const imageErrUrl = import.meta.env.IMAGE_ERR_URL;
+        if (S3Url) {
+          const imageUrl = `${S3Url}/${imageErrUrl}`; // Replace with your image key
           setS3ErrorImageUrl(imageUrl);
           setLoading(false);
           return;
