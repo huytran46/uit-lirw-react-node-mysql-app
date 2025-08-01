@@ -1,75 +1,65 @@
-import { UNSAFE_ErrorResponseImpl, useRouteError } from "react-router-dom";
+// components/ErrorPage.tsx
+
+import { useRouteError } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
 const S3ErrorImage = () => {
-  const [s3ErrorImageUrl, setS3ErrorImageUrl] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadSignedUrl = async () => {
+    (async () => {
       try {
         const res = await fetch(`${API_URL}/s3`);
-        if (!res.ok) throw new Error("Failed to fetch signed URL");
         const data = await res.json();
-        if (!data.url) throw new Error("No URL returned");
-        setS3ErrorImageUrl(data.url);
+        if (!res.ok || !data.url) throw new Error("No signed URL received");
+        setUrl(data.url);
       } catch (err) {
-        console.log(err);
-        setError("Failed to load signed image URL");
+        console.error(err);
+        setError("Image could not be loaded");
       } finally {
         setLoading(false);
       }
-    };
-
-    loadSignedUrl();
+    })();
   }, []);
 
-  if (loading) {
-    return <div className="text-gray-500 p-4">Loading image...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500 p-4">Error: {error}</div>;
-  }
-
-  if (!s3ErrorImageUrl) {
-    return <div className="text-gray-400 p-4">No image available</div>;
-  }
+  if (loading) return <div className="text-gray-500 p-4">Loading image...</div>;
+  if (error) return <div className="text-red-500 p-4">{error}</div>;
+  if (!url) return <div className="text-gray-400 p-4">No image available</div>;
 
   return (
-    <div className="flex justify-center items-center p-4">
-      <img
-        src={s3ErrorImageUrl}
-        alt="S3 Error"
-        className="max-w-md max-h-64 object-contain"
-        onError={() => {
-          setError("Image failed to load");
-          setS3ErrorImageUrl("");
-        }}
-      />
-    </div>
+    <img
+      src={url}
+      alt="404 Error - Page Not Found Illustration"
+      className="max-w-xs sm:max-w-sm md:max-w-md h-auto object-contain mb-6"
+      onError={() => {
+        setError("Failed to display image");
+        setUrl("");
+      }}
+    />
   );
 };
-export default function ErrorPage() {
-  const error: unknown = useRouteError();
 
+export default function ErrorPage() {
+  const error = useRouteError();
   const errorMessage =
     error instanceof Error
       ? error.message
-      : error instanceof UNSAFE_ErrorResponseImpl
-      ? error.statusText ?? "Unknown error"
-      : "Unknown error";
+      : "Sorry! The page you’re looking for cannot be found.";
 
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
-      <p>
-        <i>{errorMessage}</i>
-      </p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-6 text-center">
       <S3ErrorImage />
+      <p className="text-gray-800 text-lg mb-4">{errorMessage}</p>
+      <a
+        href="/"
+        className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded transition"
+      >
+        Back to Home
+      </a>
     </div>
   );
 }
