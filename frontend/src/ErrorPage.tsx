@@ -1,6 +1,7 @@
 import { UNSAFE_ErrorResponseImpl, useRouteError } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const S3ErrorImage = () => {
   const [s3ErrorImageUrl, setS3ErrorImageUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -10,7 +11,7 @@ const S3ErrorImage = () => {
     const loadSignedUrl = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/s3');
+        const res = await fetch(`${API_URL}/s3`);
         const data = await res.json();
         setS3ErrorImageUrl(data.url);
       } catch (err) {
