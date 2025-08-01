@@ -16,7 +16,7 @@ const S3ErrorImage = () => {
         if (!data.url) throw new Error("No URL returned");
         setS3ErrorImageUrl(data.url);
       } catch (err) {
-        console.error(err);
+        console.log(err);
         setError("Failed to load signed image URL");
       } finally {
         setLoading(false);

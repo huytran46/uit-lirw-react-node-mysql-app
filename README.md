@@ -313,7 +313,7 @@ echo "DB_USER=\"<db-user>\"" >> "$ENV_FILE"
 echo "DB_PASSWORD=\"<db-user-password>\"" >> "$ENV_FILE"  # Replace with actual password
 echo "DB_NAME=\"<db-name>\"" >> "$ENV_FILE"
 echo "AWS_REGION=\"<aws-region>\"" >> "$ENV_FILE"
-echo "S3_ACCESS_POINT_ARN=\"<s3-access-point-arn>\"" >> "$ENV_FILE"
+echo "S3_BUCKET_NAME=\"<s3-bucket-name>\"" >> "$ENV_FILE"
 echo "S3_ERROR_IMAGE_KEY=\"<s3-error-image-key>\"" >> "$ENV_FILE"
 # Install Node.js dependencies as ec2-user
 sudo -u ec2-user npm install

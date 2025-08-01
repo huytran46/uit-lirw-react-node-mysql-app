@@ -8,7 +8,7 @@ const s3 = new S3Client({ region: process.env.AWS_REGION || 'us-east-1' });
 exports.getSignedImageUrl = async (req, res) => {
   try {
     const command = new GetObjectCommand({
-      Bucket: process.env.S3_ACCESS_POINT_ARN,
+      Bucket: process.env.S3_BUCKET_NAME,
       Key: process.env.S3_ERROR_IMAGE_KEY,
     });
 
