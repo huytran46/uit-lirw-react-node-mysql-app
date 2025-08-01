@@ -10,60 +10,48 @@ const S3ErrorImage = () => {
   useEffect(() => {
     const loadSignedUrl = async () => {
       try {
-        setLoading(true);
         const res = await fetch(`${API_URL}/s3`);
+        if (!res.ok) throw new Error("Failed to fetch signed URL");
         const data = await res.json();
+        if (!data.url) throw new Error("No URL returned");
         setS3ErrorImageUrl(data.url);
       } catch (err) {
-        setError('Failed to load signed image URL');
+        console.error(err);
+        setError("Failed to load signed image URL");
       } finally {
         setLoading(false);
       }
     };
+
     loadSignedUrl();
   }, []);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="text-gray-500">Loading image...</div>
-      </div>
-    );
+    return <div className="text-gray-500 p-4">Loading image...</div>;
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="text-red-500 text-sm">
-          Failed to load S3 image: {error}
-        </div>
-      </div>
-    );
+    return <div className="text-red-500 p-4">Error: {error}</div>;
   }
 
   if (!s3ErrorImageUrl) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="text-gray-400 text-sm">No error image available</div>
-      </div>
-    );
+    return <div className="text-gray-400 p-4">No image available</div>;
   }
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <div className="flex justify-center items-center p-4">
       <img
         src={s3ErrorImageUrl}
         alt="S3 Error"
         className="max-w-md max-h-64 object-contain"
         onError={() => {
-          setError("Failed to load image");
+          setError("Image failed to load");
           setS3ErrorImageUrl("");
         }}
       />
     </div>
   );
 };
-
 export default function ErrorPage() {
   const error: unknown = useRouteError();
 
