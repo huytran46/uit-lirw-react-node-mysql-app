@@ -1,141 +1,101 @@
-const db = require('../configs/db');
-const logger = require('../utils/logger'); // Import logger
+const pool = require('../configs/db');
+const logger = require('../utils/logger');
 
-function AuthorsController() { }
+function AuthorsController() {}
 
-const getQuery = 'SELECT * FROM author';
+const getQuery = `SELECT * FROM author`;
 
 AuthorsController.prototype.get = async (req, res) => {
-   try {
-      logger.info('AuthorsController [GET]');
+  try {
+    logger.info('AuthorsController [GET]');
+    const [authors] = await pool.query(getQuery);
 
-      db.query(getQuery, (err, authors) => {
-         if (err) {
-            logger.error(`Error executing query: ${err.message}`);
-            throw new Error("Error executing query.");
-         }
-
-         logger.info(`Authors count: ${authors.length}`);
-
-         res.status(200).json({
-            authors: authors,
-         });
-      });
-   } catch (error) {
-      logger.error(`Error: ${error.message}`);
-      res.status(500).json({
-         message:
-            "Something unexpected has happened. Please try again later.",
-      });
-   }
+    logger.info(`Authors count: ${authors.length}`);
+    res.status(200).json({ authors });
+  } catch (error) {
+    logger.error(`Error: ${error.message}`);
+    res.status(500).json({
+      message: "Something unexpected has happened. Please try again later.",
+    });
+  }
 };
 
 AuthorsController.prototype.create = async (req, res) => {
-   try {
-      const { name, birthday, bio } = req.body;
+  try {
+    const { name, birthday, bio } = req.body;
+    logger.info(`[CREATE] name: ${name}, birthday: ${birthday}`);
 
-      logger.info(`AuthorsController [CREATE] - name: ${name}, birthday: ${birthday}, bio: ${bio}`);
+    const insertQuery = `
+      INSERT INTO author (name, birthday, bio, createdAt, updatedAt)
+      VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `;
+    await pool.execute(insertQuery, [name, new Date(birthday), bio]);
 
-      db.query('INSERT INTO author (name, birthday, bio, createdAt, updatedAt) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)', [
-         name, new Date(birthday), bio], (err) => {
-            if (err) {
-               logger.error(`Error executing query: ${err.message}`);
-               throw new Error("Error executing query.");
-            }
+    const [authors] = await pool.query(getQuery);
+    logger.info(`Author created. Total authors: ${authors.length}`);
 
-            db.query(getQuery, (err, authors) => {
-               if (err) {
-                  logger.error(`Error executing query: ${err.message}`);
-                  throw new Error("Error executing query.");
-               }
-
-               logger.info(`Author created successfully. authors count: ${authors.length}`);
-
-               return res.status(200).json({
-                  message: `Author created successfully!`,
-                  authors: authors,
-               });
-            });
-         });
-   } catch (error) {
-      logger.error(`Error: ${error.message}`);
-      res.status(500).json({
-         message:
-            "Something unexpected has happened. Please try again later.",
-      });
-   }
+    res.status(200).json({
+      message: `Author created successfully!`,
+      authors,
+    });
+  } catch (error) {
+    logger.error(`[CREATE] Error: ${error.message}`);
+    res.status(500).json({
+      message: "Something unexpected has happened. Please try again later.",
+    });
+  }
 };
 
 AuthorsController.prototype.update = async (req, res) => {
-   try {
-      const authorId = req.params.id;
-      const { name, birthday, bio } = req.body;
+  try {
+    const authorId = req.params.id;
+    const { name, birthday, bio } = req.body;
 
-      logger.info(`AuthorsController [UPDATE] - authorId: ${authorId}, name: ${name}, birthday: ${birthday}, bio: ${bio}`);
+    logger.info(`[UPDATE] id: ${authorId}, name: ${name}`);
 
-      db.query(`UPDATE author SET name = ?, birthday = ?, bio = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`, [
-         name, new Date(birthday), bio, authorId], (err) => {
-            if (err) {
-               logger.error(`Error executing query: ${err.message}`);
-               throw new Error("Error executing query.");
-            }
+    const updateQuery = `
+      UPDATE author
+      SET name = ?, birthday = ?, bio = ?, updatedAt = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+    await pool.execute(updateQuery, [name, new Date(birthday), bio, authorId]);
 
-            db.query(getQuery, (err, authors) => {
-               if (err) {
-                  logger.error(`Error executing query: ${err.message}`);
-                  throw new Error("Error executing query.");
-               }
+    const [authors] = await pool.query(getQuery);
+    logger.info(`Author updated. Total authors: ${authors.length}`);
 
-               logger.info(`Author updated successfully. authors count: ${authors.length}`);
-
-               return res.status(200).json({
-                  message: `Author updated successfully!`,
-                  authors: authors,
-               });
-            });
-         });
-   } catch (error) {
-      logger.error(`Error: ${error.message}`);
-      res.status(500).json({
-         message:
-            "Something unexpected has happened. Please try again later.",
-      });
-   }
+    res.status(200).json({
+      message: `Author updated successfully!`,
+      authors,
+    });
+  } catch (error) {
+    logger.error(`[UPDATE] Error: ${error.message}`);
+    res.status(500).json({
+      message: "Something unexpected has happened. Please try again later.",
+    });
+  }
 };
 
 AuthorsController.prototype.delete = async (req, res) => {
-   try {
-      const authorId = req.params.id;
+  try {
+    const authorId = req.params.id;
+    logger.info(`[DELETE] id: ${authorId}`);
 
-      logger.info(`AuthorsController [DELETE] - authorId: ${authorId}`);
+    const deleteQuery = `DELETE FROM author WHERE id = ?`;
+    await pool.execute(deleteQuery, [authorId]);
 
-      db.query('DELETE FROM author WHERE id = ?', [authorId], (err, result) => {
-         if (err) {
-            logger.error(`Error executing query: ${err.message}`);
-            throw new Error("Error executing query.");
-         }
+    const [authors] = await pool.query(getQuery);
+    logger.info(`Author deleted. Total authors: ${authors.length}`);
 
-         db.query(getQuery, (err, authors) => {
-            if (err) {
-               logger.error(`Error executing query: ${err.message}`);
-               throw new Error("Error executing query.");
-            }
-
-            logger.info(`Author deleted successfully. authors count: ${authors.length}`);
-
-            return res.status(200).json({
-               message: `Author deleted successfully!`,
-               authors: authors,
-            });
-         });
-      });
-   } catch (error) {
-      logger.error(`Error: ${error.message}`);
-      res.status(500).json({
-         message:
-            "Something unexpected has happened. Please try again later.",
-      });
-   }
+    res.status(200).json({
+      message: `Author deleted successfully!`,
+      authors,
+    });
+  } catch (error) {
+    logger.error(`[DELETE] Error: ${error.message}`);
+    res.status(500).json({
+      message: "Something unexpected has happened. Please try again later.",
+    });
+  }
 };
 
 module.exports = new AuthorsController();
