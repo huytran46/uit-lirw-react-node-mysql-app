@@ -312,7 +312,9 @@ echo "DB_PORT=\"3306\"" >> "$ENV_FILE"
 echo "DB_USER=\"<db-user>\"" >> "$ENV_FILE"
 echo "DB_PASSWORD=\"<db-user-password>\"" >> "$ENV_FILE"  # Replace with actual password
 echo "DB_NAME=\"<db-name>\"" >> "$ENV_FILE"
-
+echo "AWS_REGION=\"<aws-region>\"" >> "$ENV_FILE"
+echo "S3_ACCESS_POINT_ARN=\"<s3-access-point-arn>\"" >> "$ENV_FILE"
+echo "S3_ERROR_IMAGE_KEY=\"<s3-error-image-key>\"" >> "$ENV_FILE"
 # Install Node.js dependencies as ec2-user
 sudo -u ec2-user npm install
 
@@ -383,8 +385,6 @@ REPO_DIR="/home/ec2-user/uit-lirw-react-node-mysql-app/frontend"
 ENV_FILE="$REPO_DIR/.env"
 APP_TIER_ALB_URL="http://<internal-application-tier-alb-end-point.region.elb.amazonaws.com>"  # Replace with your actual alb endpoint
 API_URL="/api"
-VITE_S3_URL="<S3_URL>" # Replace with your s3 bucket url
-IMAGE_ERR_URL="<IMAGE_URL>" # Replace with your s3 bucket url
 # Clone the repository as ec2-user
 cd /home/ec2-user
 sudo -u ec2-user git clone $REPO_URL
@@ -399,8 +399,6 @@ sudo chown -R ec2-user:ec2-user /home/ec2-user/uit-lirw-react-node-mysql-app
 
 # Create .env file with the API_URL
 echo "VITE_API_URL=\"$API_URL\"" >> "$ENV_FILE"
-echo "VITE_S3_URL=\"$VITE_S3_URL\"" >> "$ENV_FILE"
-echo "VITE_IMAGE_ERR_URL=\"$IMAGE_ERR_URL\"" >> "$ENV_FILE"
 # Install Node.js dependencies as ec2-user
 sudo -u ec2-user npm install
 

@@ -7,32 +7,19 @@ const S3ErrorImage = () => {
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    const loadS3Image = async () => {
+    const loadSignedUrl = async () => {
       try {
         setLoading(true);
-
-        // Method 1: Direct Public URL (simplest approach)
-        // If your S3 bucket is public, just use direct URL
-        const S3Url = import.meta.env.VITE_S3_URL;
-        const imageErrUrl = import.meta.env.VITE_IMAGE_ERR_URL;
-        if (S3Url) {
-          const imageUrl = `${S3Url}/${imageErrUrl}`;
-          console.log("Final S3 Image URL:", imageUrl);
-          setS3ErrorImageUrl(imageUrl);
-          setLoading(false);
-          return;
-        }
+        const res = await fetch('/api/s3');
+        const data = await res.json();
+        setS3ErrorImageUrl(data.url);
       } catch (err) {
-        console.error("Error loading S3 image:", err);
-        setError(err instanceof Error ? err.message : "Failed to load image");
-        // Fallback to a default image or empty state
-        setS3ErrorImageUrl("");
+        setError('Failed to load signed image URL');
       } finally {
         setLoading(false);
       }
     };
-
-    loadS3Image();
+    loadSignedUrl();
   }, []);
 
   if (loading) {
