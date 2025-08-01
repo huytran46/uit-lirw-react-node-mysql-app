@@ -1,34 +1,30 @@
 const pool = require('../configs/db');
-const logger = require('../utils/logger'); // Import logger
+const logger = require('../utils/logger');
 
-function BooksController() { }
+function BooksController() {}
 
-const getQuery = `SELECT b.id as id, b.title as title, b.releaseDate as releaseDate, b.description as description, b.pages as pages,
- b.createdAt as createdAt, b.updatedAt as updatedAt, a.id as authorId, a.name as name, a.birthday as birthday, a.bio as bio FROM book b INNER JOIN author a on b.authorId = a.id`;
+const getQuery = `
+  SELECT b.id, b.title, b.releaseDate, b.description, b.pages,
+         b.createdAt, b.updatedAt,
+         a.id as authorId, a.name, a.birthday, a.bio
+  FROM book b
+  INNER JOIN author a on b.authorId = a.id
+`;
 
 BooksController.prototype.get = async (req, res) => {
-   try {
-      const [books] = await pool.query(getQuery);
-
-      logger.info(`Books count: ${books.length}`);
-
-      res.status(200).json({ books });
-   } catch (error) {
-      logger.error(`Error executing query: ${err.message}`);
-
-      res.status(500).json({ message: "Something unexpected has happened." });
-   }
+  try {
+    const [books] = await pool.query(getQuery);
+    logger.info(`Books count: ${books.length}`);
+    res.status(200).json({ books });
+  } catch (error) {
+    logger.error(`Error executing query: ${error.message}`);
+    res.status(500).json({ message: "Something unexpected has happened." });
+  }
 };
 
 BooksController.prototype.create = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      releaseDate,
-      pages,
-      author: authorId,
-    } = req.body;
+    const { title, description, releaseDate, pages, author: authorId } = req.body;
 
     logger.info(`[CREATE] title: ${title}, releaseDate: ${releaseDate}, pages: ${pages}, authorId: ${authorId}`);
 
@@ -40,30 +36,18 @@ BooksController.prototype.create = async (req, res) => {
     await pool.execute(insertQuery, [title, new Date(releaseDate), description, pages, authorId]);
 
     const [books] = await pool.query(getQuery);
-
     logger.info(`Book created. Total books: ${books.length}`);
-    return res.status(200).json({
-      message: `Book created successfully!`,
-      books,
-    });
+    res.status(200).json({ message: "Book created successfully!", books });
   } catch (error) {
     logger.error(`[CREATE] Error: ${error.message}`);
-    return res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Something unexpected has happened. Please try again later." });
   }
-};;
+};
 
 BooksController.prototype.update = async (req, res) => {
   try {
     const bookId = req.params.id;
-    const {
-      title,
-      description,
-      releaseDate,
-      pages,
-      author: authorId,
-    } = req.body;
+    const { title, description, releaseDate, pages, author: authorId } = req.body;
 
     logger.info(`[UPDATE] id: ${bookId}, title: ${title}`);
 
@@ -76,41 +60,28 @@ BooksController.prototype.update = async (req, res) => {
     await pool.execute(updateQuery, [title, new Date(releaseDate), description, pages, authorId, bookId]);
 
     const [books] = await pool.query(getQuery);
-
     logger.info(`Book updated. Total books: ${books.length}`);
-    return res.status(200).json({
-      message: `Book updated successfully!`,
-      books,
-    });
+    res.status(200).json({ message: "Book updated successfully!", books });
   } catch (error) {
     logger.error(`[UPDATE] Error: ${error.message}`);
-    return res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Something unexpected has happened. Please try again later." });
   }
 };
 
 BooksController.prototype.delete = async (req, res) => {
   try {
     const bookId = req.params.id;
-
     logger.info(`[DELETE] id: ${bookId}`);
 
     const deleteQuery = `DELETE FROM book WHERE id = ?`;
     await pool.execute(deleteQuery, [bookId]);
 
     const [books] = await pool.query(getQuery);
-
     logger.info(`Book deleted. Total books: ${books.length}`);
-    return res.status(200).json({
-      message: `Book deleted successfully!`,
-      books,
-    });
+    res.status(200).json({ message: "Book deleted successfully!", books });
   } catch (error) {
     logger.error(`[DELETE] Error: ${error.message}`);
-    return res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Something unexpected has happened. Please try again later." });
   }
 };
 

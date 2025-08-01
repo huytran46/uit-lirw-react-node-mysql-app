@@ -9,14 +9,11 @@ AuthorsController.prototype.get = async (req, res) => {
   try {
     logger.info('AuthorsController [GET]');
     const [authors] = await pool.query(getQuery);
-
     logger.info(`Authors count: ${authors.length}`);
     res.status(200).json({ authors });
   } catch (error) {
-    logger.error(`Error: ${error.message}`);
-    res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    logger.error(`[GET] Error: ${error.message}`);
+    res.status(500).json({ message: "Unexpected error. Please try again." });
   }
 };
 
@@ -32,17 +29,11 @@ AuthorsController.prototype.create = async (req, res) => {
     await pool.execute(insertQuery, [name, new Date(birthday), bio]);
 
     const [authors] = await pool.query(getQuery);
-    logger.info(`Author created. Total authors: ${authors.length}`);
-
-    res.status(200).json({
-      message: `Author created successfully!`,
-      authors,
-    });
+    logger.info(`Author created. Total: ${authors.length}`);
+    res.status(200).json({ message: "Author created successfully!", authors });
   } catch (error) {
     logger.error(`[CREATE] Error: ${error.message}`);
-    res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Unexpected error. Please try again." });
   }
 };
 
@@ -50,7 +41,6 @@ AuthorsController.prototype.update = async (req, res) => {
   try {
     const authorId = req.params.id;
     const { name, birthday, bio } = req.body;
-
     logger.info(`[UPDATE] id: ${authorId}, name: ${name}`);
 
     const updateQuery = `
@@ -61,17 +51,11 @@ AuthorsController.prototype.update = async (req, res) => {
     await pool.execute(updateQuery, [name, new Date(birthday), bio, authorId]);
 
     const [authors] = await pool.query(getQuery);
-    logger.info(`Author updated. Total authors: ${authors.length}`);
-
-    res.status(200).json({
-      message: `Author updated successfully!`,
-      authors,
-    });
+    logger.info(`Author updated. Total: ${authors.length}`);
+    res.status(200).json({ message: "Author updated successfully!", authors });
   } catch (error) {
     logger.error(`[UPDATE] Error: ${error.message}`);
-    res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Unexpected error. Please try again." });
   }
 };
 
@@ -84,17 +68,11 @@ AuthorsController.prototype.delete = async (req, res) => {
     await pool.execute(deleteQuery, [authorId]);
 
     const [authors] = await pool.query(getQuery);
-    logger.info(`Author deleted. Total authors: ${authors.length}`);
-
-    res.status(200).json({
-      message: `Author deleted successfully!`,
-      authors,
-    });
+    logger.info(`Author deleted. Total: ${authors.length}`);
+    res.status(200).json({ message: "Author deleted successfully!", authors });
   } catch (error) {
     logger.error(`[DELETE] Error: ${error.message}`);
-    res.status(500).json({
-      message: "Something unexpected has happened. Please try again later.",
-    });
+    res.status(500).json({ message: "Unexpected error. Please try again." });
   }
 };
 
