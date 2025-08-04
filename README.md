@@ -1,6 +1,7 @@
 # Learn It Right Way
 This project is a full-stack web application built using React js for the frontend, Express js for the backend, and MySQL as the database. The application is designed to demonstrate the implementation of a 3-tier architecture, where the presentation layer (React js), application logic layer (Express js), and data layer (MySQL) are separated into distinct tiers.
-
+#### System Design
+![Dashboard](./frontend/public/ss/AWS.drawio.png)
 
 ## User Interface Screenshots 
 #### Dashboard
@@ -342,7 +343,7 @@ sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json > /de
         "collect_list": [
           {
             "file_path": "/home/ec2-user/uit-lirw-react-node-mysql-app/backend/logs/*.log",
-            "log_group_name": "backend-node-app-logs",
+            "log_group_name": "<name_log_group>",
             "log_stream_name": "{instance_id}",
             "timestamp_format": "%Y-%m-%d %H:%M:%S"
           }
